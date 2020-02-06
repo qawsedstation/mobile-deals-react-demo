@@ -1,4 +1,4 @@
-# React Demo Mobile Deals App
+# React Demo Mobile Deals App - YEAR 2016
 This is a demonstration application and is using:
 
 1. Material Design
