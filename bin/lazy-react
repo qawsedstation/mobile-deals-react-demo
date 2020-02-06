@@ -1,0 +1,111 @@
+#!/usr/bin/env node
+
+var program = require('commander');
+var path = require('path');
+var ucfirst = require('ucfirst');
+var chalk = require('chalk');
+var fs = require('fs-extra')
+var mkdir = require('mkdir-recursive').mkdirSync;
+
+var root = path.resolve(__dirname, '..');
+
+var componentSources = {
+
+  component: {
+    'index.js': path.join(root, 'bin/files/component/index.js'),
+    'spec.js': path.join(root, 'bin/files/component/spec.js'),
+    'story.js': path.join(root, 'bin/files/component/story.js'),
+    'styles.js': path.join(root, 'bin/files/component/styles.js'),
+  },
+
+  page: {
+    'index.js': path.join(root, 'bin/files/page/index.js'),
+    'spec.js': path.join(root, 'bin/files/page/spec.js'),
+    'styles.js': path.join(root, 'bin/files/page/styles.js'),
+  },
+
+  redux: {
+    'actions.js': path.join(root, 'bin/files/redux/actions.js'),
+    'constants.js': path.join(root, 'bin/files/redux/constants.js'),
+    'container.js': path.join(root, 'bin/files/redux/container.js'),
+    // 'container.spec.js': path.join(root, 'bin/files/redux/container.spec.js'),
+    'reducer.js': path.join(root, 'bin/files/redux/reducer.js'),
+    // 'reducer.spec.js': path.join(root, 'bin/files/page/reducer.spec.js'),
+  }
+
+};
+
+var targetPaths = {
+  components: path.join(root, 'app/components/modules'),
+  pages: path.join(root, 'app/components/pages'),
+  redux: path.join(root, 'app/redux/modules'),
+}
+
+/**
+ *  program execution
+ */
+program
+  .version('0.0.2')
+  .arguments('<name>')
+  .option('-c, --component', 'create a component')
+  .option('-p, --page', 'create a page')
+  .option('-r, --redux', 'create a redux module')
+  // .option('-l, --layout', 'create layout component')
+  .option('--path [path]', 'specify path suffix')
+  .option('--dry', 'dry run')
+  .action(function(name) {
+
+    var targetPath = null;
+
+    // retrieve module name
+    var Name = ucfirst(name)
+
+    if (program.component) {
+      var sources = componentSources.component;
+      targetPath = path.resolve(targetPaths.components, program.path ? program.path : '', Name)
+    }
+
+    if (program.page) {
+      var sources = componentSources.page;
+      targetPath = path.resolve(targetPaths.pages, program.path ? program.path : '', Name)
+    }
+
+    if (program.redux) {
+      var sources = componentSources.redux;
+      targetPath = path.resolve(targetPaths.redux, program.path ? program.path : '', Name)
+    }
+    var displayPath = targetPath.replace(root+'/', '').replace('/'+Name, '');
+
+    console.log()
+
+    console.log(chalk.green('Generating: '), displayPath, '/', chalk.blue(Name));
+
+    if (!program.dry) mkdir(targetPath)
+
+    // console.log (Object.keys(sources));
+
+    for (var file in sources) {
+      var _target = `${targetPath}/${file}`;
+      console.log(chalk.blue(file));
+      try {
+        var stat = fs.lstatSync(_target);
+        if (!stat.size) throw 'empty';
+          console.log(' - target:     ', chalk.green(_target));
+          console.log(' - result:   ', chalk.yellow('skipping, already exists'));
+
+        } catch(e) {
+          console.log(' - source:   ', chalk.green(`${sources[file]}`));
+          console.log(' - target:   ', chalk.green(_target));
+          if (!program.dry) fs.copySync(sources[file], _target);
+      }
+
+    }
+
+    console.log()
+
+    console.log(chalk.green('Cool.'));
+
+    console.log()
+
+  })
+  .parse(process.argv);
