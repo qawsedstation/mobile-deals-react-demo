@@ -46,7 +46,7 @@
     "commander": "2.9.0",
     "cors-anywhere": "0.4.0",
     "enzyme": "2.3.0",
-    "eslint": "2.10.2",
+    "eslint": "4.18.2",
     "eslint-config-airbnb": "9.0.1",
     "eslint-import-resolver-webpack": "0.2.5",
     "eslint-plugin-import": "1.8.0",
