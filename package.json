@@ -60,7 +60,7 @@
     "jsdom": "9.1.0",
     "mkdir-recursive": "0.2.1",
     "mocha": "2.4.5",
-    "node-sass": "3.7.0",
+    "node-sass": "4.13.1",
     "postcss-loader": "0.9.1",
     "react-addons-test-utils": "15.0.2",
     "redux-devtools": "3.3.1",
